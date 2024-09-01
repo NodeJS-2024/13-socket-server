@@ -1,5 +1,6 @@
 import { UuidAdapter } from '../../config/uuid.adapter';
 import { Ticket } from '../../domain/interfaces/ticket.interface';
+import { WssService } from './wss.service';
 
 export class TicketService {
 
@@ -13,6 +14,10 @@ export class TicketService {
   ];
 
   private readonly workingOnTickets: Ticket[] = [];
+
+  constructor(
+    private readonly wssService = WssService.instance,
+  ) {}
 
   public get pendingTickets(): Ticket[] {
     return this.tickets.filter(ticket => !ticket.handleAtDesk);
@@ -41,6 +46,7 @@ export class TicketService {
     this.tickets.push(ticket);
 
     // Comunicar con WebSocket
+    this.onTicketNumberChanged();
 
     return ticket
   }
@@ -75,6 +81,10 @@ export class TicketService {
     });
 
     return { status: 'ok' };    
+  }
+
+  private onTicketNumberChanged() {
+    this.wssService.sendMessage('on-ticket-count-changed', this.pendingTickets.length);
   }
 
 }
