@@ -62,6 +62,7 @@ export class TicketService {
     this.workingOnTickets.unshift({ ...ticket }); // Nuevo ticket en pantalla (mostrar de 4 en 4)
 
     // Notificar al Websocket
+    this.onTicketNumberChanged();
 
     return { status: 'ok', ticket };
   }
